@@ -1,22 +1,19 @@
-import { renderHtml, respondHTML } from './html';
-import { isValidJSONC } from './shared';
+import * as JSONC from '@jsr/std__jsonc';
+import { escape } from '@jsr/std__html';
 
 export interface Env {}
 
+// curl -X POST --data-binary @file.jsonc http://localhost:8787/
 export default {
 	async fetch(req: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-		if (req.method === 'GET') {
-			const html = renderHtml({ status: 'empty' });
-			return respondHTML(html);
-		} else if (req.method === 'POST') {
-			const form = await req.formData();
-			const input = form.get('data') as string;
+		const form = await req.formData();
+		const input = Array.from(form.keys())[0];
 
-			const valid = isValidJSONC(input);
-			const html = renderHtml({ status: valid ? 'ok' : 'error', input });
-			return respondHTML(html);
-		} else {
-			return new Response('Only supports POST or GET requests');
+		try {
+			JSONC.parse(input);
+		} catch (err) {
+			return new Response(`<h1>Invalid: ${escape(err.message)}</h1>`);
 		}
+		return new Response('<h1>valid</h1>');
 	},
 };

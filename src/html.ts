@@ -1,4 +1,4 @@
-import { escape } from '@jsr/std__html';
+import { escapeHtml } from './shared';
 
 const DEFAULT = `{
 	// This is a comment
@@ -74,8 +74,9 @@ export function renderHtml({ status, input = DEFAULT }: { status: 'ok' | 'error'
 <body>
 	<div class="page">
 		<h1>CF Worker JSONC validator</h1>
+		<p>Enter text and click the button to check if the input is valid <a href="https://github.com/muhammadmuzzammil1998/jsonc">JSONC</a>.</p>
 		<form method="POST">
-			<textarea name="data">${escape(input)}</textarea>
+			<textarea name="data">${escapeHtml(input)}</textarea>
 			${
 				status === 'error'
 					? `<div class="error message">This is invalid JSONC</div>`
